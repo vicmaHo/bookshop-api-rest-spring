@@ -1,0 +1,18 @@
+# uso de un archivo distinto de configuracion de la aplicacion en este caso .yml
+
+#server:
+#  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bookshop_db
+    username: root
+    password: admin
+    driver-class-name:  com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update     
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
