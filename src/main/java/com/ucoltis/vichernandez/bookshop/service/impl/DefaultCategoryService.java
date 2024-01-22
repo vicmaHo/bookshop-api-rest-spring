@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.ucoltis.vichernandez.bookshop.controller.dto.CategoryRequest;
 import com.ucoltis.vichernandez.bookshop.controller.dto.CategoryResponse;
+import com.ucoltis.vichernandez.bookshop.controller.exceptions.BadArgumentException;
+import com.ucoltis.vichernandez.bookshop.controller.exceptions.NotFoundException;
 import com.ucoltis.vichernandez.bookshop.model.entity.Category;
 import com.ucoltis.vichernandez.bookshop.model.repository.CategoryRepository;
 import com.ucoltis.vichernandez.bookshop.service.CategoryService;
@@ -41,15 +43,23 @@ public class DefaultCategoryService implements CategoryService{
 				.map((category) -> new CategoryResponse(category.getId(), category.getName()))
 				.toList();
 		
+		if(response.isEmpty()) {
+			throw new NotFoundException("001", "No existen categorias registradas");
+		}
+		
 		return response;
 	}
 
 	@Override
 	public CategoryResponse findById(Long id) {
 		
+		if (id == null || id == 0) {
+			throw new BadArgumentException("002", "Parametro invalido");
+		}
+		
 		var category = categoryRepository.findById(id)
 				.map((element) -> new CategoryResponse(element.getId(), element.getName()))
-				.orElse(new CategoryResponse()); // es un elemento optional con la finalidad de manejar valores nulos, lo manejo de esta forma
+				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id)); // es un elemento optional con la finalidad de manejar valores nulos, lo manejo de esta forma
 		// intento converttir el objeto y si no devuelvo la categoria vacia
 	
 		
@@ -60,6 +70,10 @@ public class DefaultCategoryService implements CategoryService{
 	@Override
 	public CategoryResponse create(CategoryRequest category) {
 		
+		if (category == null || category.getName().isBlank()) {
+			throw new BadArgumentException("002", "El nombre de la categoria es obligatorio");
+		}
+		
 		var newCategory = categoryRepository.save(new Category(null, category.getName())); // al ser autoincrement mando id null
 		
 		return new CategoryResponse(newCategory.getId(), newCategory.getName());
@@ -68,26 +82,36 @@ public class DefaultCategoryService implements CategoryService{
 	@Override
 	public CategoryResponse update(Long id, CategoryRequest category) {
 		
-		var oldCategory = categoryRepository.findById(id);
-		
-		if (oldCategory.isPresent()) {
-			var newCategory = oldCategory.get();
-			newCategory.setName(category.getName());
-			newCategory = categoryRepository.save(newCategory);
-			
-			return new CategoryResponse(newCategory.getId(), newCategory.getName());
+		if (id == null || id == 0) {
+			throw new BadArgumentException("002", "El ID es un parametro invalido");
 		}
 		
-		return new CategoryResponse();
+		if (category == null || category.getName().isBlank()) {
+			throw new BadArgumentException("002", "El nombre de la categoria es obligatorio");
+		}
+		
+		var newCategory = categoryRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
+		
+		newCategory.setName(category.getName());
+		newCategory = categoryRepository.save(newCategory);
+		
+		return new CategoryResponse(newCategory.getId(), newCategory.getName());
+		
 	}
 
 	@Override
 	public void delete(Long id) {
-		var oldCategory = categoryRepository.findById(id);
 		
-		if (oldCategory.isPresent()) {
-			categoryRepository.deleteById(id);
+		if (id == null || id == 0) {
+			throw new BadArgumentException("002", "El ID es un parametro invalido");
 		}
+		
+		categoryRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
+		
+
+		categoryRepository.deleteById(id);
 	}
 
 }
