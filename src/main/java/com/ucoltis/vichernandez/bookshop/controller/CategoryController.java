@@ -46,13 +46,13 @@ public class CategoryController {
 	}
 	
 	@PutMapping("/{id}")
-	public CategoryResponse update(@PathVariable Long id, @RequestBody CategoryRequest category) { // si la variable tiene el mismo nombre puedo dejarala asi en el pathvariable
+	public CategoryResponse update(@PathVariable("id") Long id, @RequestBody CategoryRequest category) { // si la variable tiene el mismo nombre puedo dejarala asi en el pathvariable
 		
 		return categoryService.update(id, category);
 	}
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
+	public void delete(@PathVariable("id") Long id) {
 		categoryService.delete(id);
 	}
 	

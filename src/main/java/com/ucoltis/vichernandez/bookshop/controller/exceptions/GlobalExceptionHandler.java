@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorMessage> handleDefault(RuntimeException exception){
 		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE.value())
 				.body(ErrorMessage.builder()
+						.code("099")
 						.message(exception.getMessage())
 						.build());
 	}

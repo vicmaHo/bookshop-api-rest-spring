@@ -1,6 +1,5 @@
 package com.ucoltis.vichernandez.bookshop.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,8 +22,6 @@ public class DefaultCategoryService implements CategoryService{
 	
 	@Override
 	public List<CategoryResponse> list() {
-		
-		var categories = categoryRepository.findAll();
 		
 		//Mapeo las entidades de la base de datos a objetos de datos
 //		List<CategoryResponse> response = new ArrayList<CategoryResponse>();
