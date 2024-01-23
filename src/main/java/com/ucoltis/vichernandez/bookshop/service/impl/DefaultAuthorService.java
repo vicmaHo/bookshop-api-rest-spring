@@ -66,7 +66,12 @@ public class DefaultAuthorService implements AuthorService {
 		System.out.println(value.toString());
 		
 		var newAuthor = modelMapper.map(value, Author.class);
+		
+		System.out.println(newAuthor.toString());
+		
 		newAuthor = repository.save(newAuthor);
+		
+		System.out.println(newAuthor.toString());
 		
 		return modelMapper.map(newAuthor, AuthorResponse.class);
 	}
