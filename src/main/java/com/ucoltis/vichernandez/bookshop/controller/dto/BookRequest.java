@@ -29,7 +29,7 @@ public class BookRequest {
 	private String image;
 	
 	// en el dto solo pedire los ids
-	private Long category;
+	private Long categoryId;
 	
-	private Long author;
+	private Long authorId;
 }

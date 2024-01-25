@@ -30,8 +30,8 @@ public class BookResponse {
 	
 	private String image;
 	
-	private Long category;
+	private Long categoryId;
 	
-	private Long author;
+	private Long authorId;
 	
 }

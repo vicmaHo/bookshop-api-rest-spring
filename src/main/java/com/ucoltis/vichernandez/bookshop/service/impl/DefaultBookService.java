@@ -58,13 +58,13 @@ public class DefaultBookService implements BookService {
 	public BookResponse create(BookRequest value) {
 		
 		if (value == null) {
-			throw new BadArgumentException("002", "Los datos son obligatorios");
+			throw new BadArgumentException("002", "Los datos son obligatorio");
 		}
-		
-		
-		var author = authorRepository.findById(value.getAuthor()).get();
-		var category = categoryRepository.findById(value.getCategory()).get();
-		
+
+		var author = authorRepository.findById(value.getAuthorId())
+				.orElseThrow(() -> new NotFoundException("001", "No fue encontrado un autor con el id dado"));
+		var category = categoryRepository.findById(value.getCategoryId())
+				.orElseThrow(() -> new NotFoundException("001", "No fue encontrado una categoría con el id dado"));
 		
 		var newBook = new Book();
 		newBook.setTitle(value.getTitle());
@@ -77,7 +77,11 @@ public class DefaultBookService implements BookService {
 		newBook.setAuthor(author);
 		newBook.setCategory(category);
 		
+		System.out.println(newBook.toString());
+		
 		newBook = bookRepository.save(newBook);
+		
+		System.out.println(newBook.toString());
 		
 		return modelMapper.map(newBook, BookResponse.class);
 	}
@@ -96,25 +100,24 @@ public class DefaultBookService implements BookService {
 		var oldBook = bookRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
 		
-		var author = authorRepository.findById(value.getAuthor()).get();
-		var category = categoryRepository.findById(value.getCategory()).get();
+		var author = authorRepository.findById(value.getAuthorId())
+				.orElseThrow(() -> new NotFoundException("001", "No fue encontrado un autor con el id dado"));
+		var category = categoryRepository.findById(value.getCategoryId())
+				.orElseThrow(() -> new NotFoundException("001", "No fue encontrado una categoría con el id dado"));
 		
-		
-		// transformo el libro viejo a uno nuevo
-		oldBook.setAuthor(author);
-		oldBook.setCategory(category);
+	
+		oldBook.setTitle(value.getTitle());
 		oldBook.setDescription(value.getDescription());
-		oldBook.setImage(value.getImage());
+		oldBook.setPrice(value.getPrice());
 		oldBook.setIsbn(value.getIsbn());
 		oldBook.setPages(value.getPages());
-		oldBook.setPrice(value.getPrice());
 		oldBook.setReleaseDate(value.getReleaseDate());
-		oldBook.setTitle(value.getTitle());
+		oldBook.setImage(value.getImage());
+		oldBook.setAuthor(author);
+		oldBook.setCategory(category);
+		oldBook = bookRepository.save(oldBook);
 		
-		
-		var newBook = bookRepository.save(oldBook);
-		
-		return modelMapper.map(newBook, BookResponse.class);
+		return modelMapper.map(oldBook, BookResponse.class);
 	}
 
 	@Override
