@@ -10,7 +10,9 @@ import com.ucoltis.vichernandez.bookshop.controller.dto.BookResponse;
 import com.ucoltis.vichernandez.bookshop.controller.exceptions.BadArgumentException;
 import com.ucoltis.vichernandez.bookshop.controller.exceptions.NotFoundException;
 import com.ucoltis.vichernandez.bookshop.model.entity.Book;
+import com.ucoltis.vichernandez.bookshop.model.repository.AuthorRepository;
 import com.ucoltis.vichernandez.bookshop.model.repository.BookRepository;
+import com.ucoltis.vichernandez.bookshop.model.repository.CategoryRepository;
 import com.ucoltis.vichernandez.bookshop.service.BookService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefaultBookService implements BookService {
 	
-	private final BookRepository repository;
+	private final BookRepository bookRepository;
+	private final AuthorRepository authorRepository;
+	private final CategoryRepository categoryRepository;
+	
 	private final ModelMapper modelMapper;
 	
 	@Override
 	public List<BookResponse> list() {
-		var response = repository.findAll().stream()
+		var response = bookRepository.findAll().stream()
 				.map((value) -> modelMapper.map(value, BookResponse.class)) // mapeo el objeto de Author a un AuthorResponse con el modelMapper
 				.toList();
 		
@@ -42,7 +47,7 @@ public class DefaultBookService implements BookService {
 			throw new BadArgumentException("002", "Parametro invalido");
 		}
 		
-		var book = repository.findById(id)
+		var book = bookRepository.findById(id)
 				.map((element) -> modelMapper.map(element, BookResponse.class))
 				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
 	
@@ -56,9 +61,23 @@ public class DefaultBookService implements BookService {
 			throw new BadArgumentException("002", "Los datos son obligatorios");
 		}
 		
-		var newBook = modelMapper.map(value, Book.class); // el id al mapear queda nulo
-		System.out.println(newBook.toString());
-		newBook = repository.save(newBook);
+		
+		var author = authorRepository.findById(value.getAuthor()).get();
+		var category = categoryRepository.findById(value.getCategory()).get();
+		
+		
+		var newBook = new Book();
+		newBook.setTitle(value.getTitle());
+		newBook.setDescription(value.getDescription());
+		newBook.setPrice(value.getPrice());
+		newBook.setIsbn(value.getIsbn());
+		newBook.setPages(value.getPages());
+		newBook.setReleaseDate(value.getReleaseDate());
+		newBook.setImage(value.getImage());
+		newBook.setAuthor(author);
+		newBook.setCategory(category);
+		
+		newBook = bookRepository.save(newBook);
 		
 		return modelMapper.map(newBook, BookResponse.class);
 	}
@@ -74,12 +93,16 @@ public class DefaultBookService implements BookService {
 			throw new BadArgumentException("002", "Los datos son obligatorios");
 		}
 		
-		var oldBook = repository.findById(id)
+		var oldBook = bookRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
 		
+		var author = authorRepository.findById(value.getAuthor()).get();
+		var category = categoryRepository.findById(value.getCategory()).get();
+		
+		
 		// transformo el libro viejo a uno nuevo
-		oldBook.setAuthor(value.getAuthor());
-		oldBook.setCategory(value.getCategory());
+		oldBook.setAuthor(author);
+		oldBook.setCategory(category);
 		oldBook.setDescription(value.getDescription());
 		oldBook.setImage(value.getImage());
 		oldBook.setIsbn(value.getIsbn());
@@ -89,7 +112,7 @@ public class DefaultBookService implements BookService {
 		oldBook.setTitle(value.getTitle());
 		
 		
-		var newBook = repository.save(oldBook);
+		var newBook = bookRepository.save(oldBook);
 		
 		return modelMapper.map(newBook, BookResponse.class);
 	}
@@ -101,11 +124,11 @@ public class DefaultBookService implements BookService {
 			throw new BadArgumentException("002", "El ID es un parametro invalido");
 		}
 		
-		repository.findById(id)
+		bookRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("001", "No se encontró un elemento con el id: " + id));
 		
 
-		repository.deleteById(id);
+		bookRepository.deleteById(id);
 		
 	}
 

@@ -2,8 +2,6 @@ package com.ucoltis.vichernandez.bookshop.controller.dto;
 
 import java.time.LocalDate;
 
-import com.ucoltis.vichernandez.bookshop.model.entity.Author;
-import com.ucoltis.vichernandez.bookshop.model.entity.Category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,8 +30,8 @@ public class BookResponse {
 	
 	private String image;
 	
-	private Category category;
+	private Long category;
 	
-	private Author author;
+	private Long author;
 	
 }

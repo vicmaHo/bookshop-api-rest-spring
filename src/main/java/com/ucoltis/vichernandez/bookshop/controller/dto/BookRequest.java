@@ -2,8 +2,6 @@ package com.ucoltis.vichernandez.bookshop.controller.dto;
 
 import java.time.LocalDate;
 
-import com.ucoltis.vichernandez.bookshop.model.entity.Author;
-import com.ucoltis.vichernandez.bookshop.model.entity.Category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +28,8 @@ public class BookRequest {
 	
 	private String image;
 	
-	private Category category;
+	// en el dto solo pedire los ids
+	private Long category;
 	
-	private Author author;
+	private Long author;
 }
