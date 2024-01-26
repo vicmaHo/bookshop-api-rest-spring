@@ -3,6 +3,7 @@ package com.ucoltis.vichernandez.bookshop.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController // Indico que es un restcontroller
 @RequestMapping("api/v1/category") // indico el endpoint -> Controlador que estara escuchando por esta ruta
 @RequiredArgsConstructor // busca los atributos final, para crear un constructor con estos atributos
+@CrossOrigin(origins = {"http://localhost:4200"}) // le doy permisos a el puerto 4200 para acceder a las peticiones de este controlador
 public class CategoryController {
 
 	private final CategoryService categoryService; // la idea en este caso sera tener las dependencias en un constructor para la inyeccion de dependencias
